@@ -25,5 +25,11 @@ you can then run databricks configure --token in your terminal and provide works
 
 This will allow you to run a databricks bundle validate command and if successful then a databricks bundle deploy -t dev command
 
-due to this being deployed on the free version of databricks catalog creation via DAB Deployment isn't possible so it is created via the set_up notebook which runs at the start of our job run before our ETL notebooks (schemas are also created here)
+due to this being deployed on the free version of databricks catalog creation via DAB Deployment isn't possible so it is created via the set_up notebook which runs at the start of our job run before our ETL notebooks (schemas are also created here).
+
+The way the job has been built is with the intention that it is ran before starting any further work on this ETL as the set up and notebooks are responsible for creating the schemas and tables (This can be run in the notebooks following each tasks dependency from the job)  
+
+
+## Testing 
+
 
