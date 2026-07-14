@@ -37,9 +37,11 @@ if spark.table(output).isEmpty():
 else:
     # get current state of table and join with bronze DF to only get new records (based on turbine_id and timestamp) 
     current_state = spark.table(output)
-    bronze_df = df.join(current_state, on=("turbine_id" , "timestamp"), how="left_anti")   
+    bronze_df = df.join(current_state, on=["turbine_id" , "timestamp"], how="left_anti")   
 
-print(f"writing to {output}...")
+bronze_df_count = bronze_df.count()
+
+print(f"writing to {bronze_df_count} records to {output}...")
 # append data to table along with merge schema to allow any new columns if they arrive in CSVs
 bronze_df.write.mode("append").option("mergeSchema", "true").saveAsTable(output)
 print(f"write to {output} completed")

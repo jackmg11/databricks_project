@@ -37,16 +37,17 @@ if current_state_gold.isEmpty():
     gold_df = gold_df
 else:
     # get current state of gold table and join with bronze DF to only get new records (based on turbine_id and timestamp) 
-    gold_df = gold_df.join(current_state_gold, on=["turbine_id" , "timestamp"], how="left_anti")   
+    gold_df = gold_df.join(current_state_gold, on=["turbine_id" , "date"], how="left_anti")   
 
 # calls dup_checker function (unions new data and current state and checks if there are any duplicates)
-dup_checker_gold = dup_checker(gold_df, current_state_gold, ("turbine_id", "timestamp"))
+dup_checker_gold = dup_checker(gold_df, current_state_gold, ("turbine_id", "date"))
 
 # raises assertion error if there are any dups
 assert dup_checker_gold.count() == 0, "Duplicate records found in silver table"
 
-print(f"writing to {output}...")
+gold_df_count = gold_df.count()
+
+print(f"writing to {gold_df_count} records to {output}...")
 # append data to table along with merge schema to allow any new columns if they arrive in CSVs
 gold_df.write.mode("append").option("mergeSchema", "true").saveAsTable(output)
 print(f"write to {output} completed")
-

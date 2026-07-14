@@ -97,7 +97,7 @@ if current_state_quarantine.isEmpty():
 else:
     # if current_state_quarantine is not empty then load only new data based on turbine_id and timestamp
     quarantine_df = quarantine_df.join(current_state_quarantine,
-        on=("turbine_id", "timestamp"),
+        on=["turbine_id", "timestamp"],
         how="left_anti"
     )   
 
@@ -113,7 +113,7 @@ if current_state_silver.isEmpty():
 else:        
     # if current_state_silver is not empty then load only new data based on turbine_id and timestamp
     silver_df = silver_df.join(current_state_silver,
-        on=("turbine_id", "timestamp"),
+        on=["turbine_id", "timestamp"],
         how="left_anti"
     )   
 
@@ -123,10 +123,13 @@ dup_checker_silver = dup_checker(silver_df, current_state_silver, ("turbine_id",
 # raises assertion error if there are any dups
 assert dup_checker_silver.count() == 0, "Duplicate records found in silver table"
 
-print(f"writing to {quarantine_df}...")
-quarantine_df.write.mode("append").option("mergeSchema", "true").saveAsTable(output_quarantine)
-print(f"writing to {quarantine_df} completed")
+quarantine_df_count = quarantine_df.count()
+silver_df_count = silver_df.count()
 
-print(f"writing to {output_silver}...")
+print(f"writing to {quarantine_df_count} records to {output_quarantine}...")
+quarantine_df.write.mode("append").option("mergeSchema", "true").saveAsTable(output_quarantine)
+print(f"writing to {output_quarantine} completed")
+
+print(f"writing to {silver_df_count} records to {output_silver}...")
 silver_df.write.mode("append").option("mergeSchema", "true").saveAsTable(output_silver)
 print(f"writing to {output_silver} completed")

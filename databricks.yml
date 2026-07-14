@@ -1,0 +1,53 @@
+bundle:
+  name: my_databricks_project
+
+targets:
+  dev:
+    default: true
+    workspace:
+      host: https://dbc-119f2363-e890.cloud.databricks.com
+
+resources:
+  jobs:
+    windfarm_etl_pipeline:
+      name: windfarm_etl
+
+      tasks: 
+        - task_key: set_up_notebook
+          notebook_task:
+            notebook_path: ./src/set_up.py
+        
+        - task_key: testing_notebook
+          notebook_task:
+            notebook_path: testing.py
+          depends_on:
+            - task_key: set_up_notebook
+
+        - task_key: bronze_notebook
+          notebook_task:
+            notebook_path: ./src/bronze.py
+          depends_on:
+            - task_key: testing_notebook
+
+        - task_key: silver_notebook
+          notebook_task:
+            notebook_path: ./src/silver.py
+          depends_on:
+            - task_key: bronze_notebook
+
+        - task_key: gold_notebook
+          notebook_task:
+            notebook_path: ./src/gold.py
+          depends_on:
+            - task_key: silver_notebook
+            
+
+
+
+
+
+
+
+
+
+
