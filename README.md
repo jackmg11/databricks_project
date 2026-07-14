@@ -1,8 +1,6 @@
-# databricks_project
-
 ## Project Overview
 
-This ETL project has been built using databricks free edition. CSV files have been placed at this location '/Volumes/workspace/files/raw_files'
+This ETL project has been built using databricks free edition and takes a look at windfarm data. CSV files have been placed at this location '/Volumes/workspace/files/raw_files'
 
 This project follows Medallion Architecture. Bronze loads the raw CSV files into one table while enhancing the raw data with relevant metadata.
 being that our source is append only our bronze notebook only checks for rows which do not exist in the current bronze table after the initial load.
