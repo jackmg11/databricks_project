@@ -30,6 +30,4 @@ due to this being deployed on the free version of databricks catalog creation vi
 
 The way the job has been built is with the intention that it is ran before starting any further work on this ETL as the set up and notebooks are responsible for creating the schemas and tables (This can be run in the notebooks following each tasks dependency from the job)  
  
-For this to be deployed to a production environment, a number of source clarifications should be made, and the ETL should be enhanced based on those clarifications. The final section of the testing notebook, which adds new random records to the source, should either be removed or run against a dummy table. Ideally, the ETL process should be implemented through functions to make it easier to test (that could be considered a future enhancement).
-
-
+For this to be deployed to a production environment, a number of source clarifications should be made, and the ETL should be enhanced based on those clarifications. The final section of the testing notebook, which adds new random records to a dummy source to test the delta loading method, should ideally be implemented as a separate function rather than being written in the same fashion, the delta load itself should also be implemented in a more efficient way once the requirements are better understood (for example, whether historical records will ever be corrected or updated, and how those changes should be handled).

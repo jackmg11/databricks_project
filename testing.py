@@ -9,6 +9,14 @@ from datetime import datetime, timedelta
 
 # COMMAND ----------
 
+windfarm_catalog = "windfarm"
+test_dummy_schema = "default"
+testing_output = f"{windfarm_catalog}.{test_dummy_schema}.test_data"
+testing_current_state = spark.table(testing_output)
+testing_input = "/Volumes/workspace/files/raw_files"
+
+# COMMAND ----------
+
 # creating dummy data to be used in dup checker function
 data = [
     ("T001", "2025-01-01 00:00:00", 120.5),
@@ -90,11 +98,11 @@ display(data)
 
 # COMMAND ----------
 
-# creating final dataframe with dummy schema 
+# creating final dataframe with dummy schema and appending random data 
 df = spark.createDataFrame(
     data,
     ["timestamp", "turbine_id", "wind_speed", "wind_direction", "power_output"]
-)
+).unionByName(dummy_df)
 
 # COMMAND ----------
 
@@ -102,4 +110,29 @@ df = spark.createDataFrame(
 df.write \
     .mode("append") \
     .option("header", "true") \
-    .csv("/Volumes/workspace/files/raw_files/")
+    .csv("/Volumes/workspace/files/test/")
+
+# COMMAND ----------
+
+# creating testing table if it doesn't exist with the schema as is in the testing df 
+if not spark.catalog.tableExists(testing_output):
+    empty_df = df.limit(0)
+    empty_df.write.mode("overwrite").saveAsTable(testing_output)
+
+# if testing_current_state is empty then load all data (this should always be 15 records on the first load)
+if testing_current_state.isEmpty():        
+    df = df
+else:
+    # if testing_current_state is not empty then load only new data based on turbine_id and timestamp
+    df = df.join(testing_current_state,
+        on=["turbine_id", "timestamp"],
+        how="left_anti"
+    )   
+
+# this count should only include new data 
+df_count = df.count()
+
+print(f"writing to {df_count} records to {testing_output}...")
+# append data to table along with merge schema to allow any new columns if they arrive in CSVs
+df.write.mode("append").option("mergeSchema", "true").saveAsTable(testing_output)
+print(f"write to {testing_output} completed")
