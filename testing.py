@@ -1,5 +1,9 @@
 # Databricks notebook source
-from common_functions import dup_checker
+# /// script
+# [tool.databricks.environment]
+# environment_version = "5"
+# ///
+from src.common_functions import dup_checker
 
 # COMMAND ----------
 
@@ -24,10 +28,10 @@ dummy_table = spark.createDataFrame(data, columns)
 # COMMAND ----------
 
 # calls dup_checker function (unions new data and current state and checks if there are any duplicates)
-dup_checker_test_pass = dup_checker(dummy_df, dummy_table, ("turbine_id", "timestamp"))
+dup_checker_test = dup_checker(dummy_df, dummy_table, ("turbine_id", "timestamp"))
 
 # raises assertion error if there are any dups
-assert dup_checker_test_pass.count() == 0, "Duplicate records found in test table"
+assert dup_checker_test.count() == 0, "Duplicate records found in test table"
 
 # COMMAND ----------
 
@@ -60,7 +64,7 @@ dummy_table = spark.createDataFrame(data, columns)
 # COMMAND ----------
 
 # calls dup_checker function (unions new data and current state and checks if there are any duplicates)
-dup_checker_test_fail = dup_checker(dummy_df, dummy_table, ("turbine_id", "timestamp"))
+dup_checker_test = dup_checker(dummy_df, dummy_table, ("turbine_id", "timestamp"))
 
-# raises assertion error if there are any dups
-assert dup_checker_test_fail.count() == 0, "Duplicate records found in test table"
+# raises assertion error if there are not any dups
+assert dup_checker_test.count() > 0, "no Duplicate records found in test table"

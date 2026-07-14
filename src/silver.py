@@ -36,7 +36,7 @@ silver_df = bronze_df.select(
 # defining the window
 window = Window.partitionBy("turbine_id", "date")
 
-# deriving anomaly_flag
+# deriving anomaly_flag along with wind_direction_out_of_range flag
 silver_df = (
     silver_df
     .withColumn(
@@ -124,7 +124,7 @@ dup_checker_silver = dup_checker(silver_df, current_state_silver, ("turbine_id",
 assert dup_checker_silver.count() == 0, "Duplicate records found in silver table"
 
 print(f"writing to {quarantine_df}...")
-silver_df.write.mode("append").option("mergeSchema", "true").saveAsTable(quarantine_df)
+quarantine_df.write.mode("append").option("mergeSchema", "true").saveAsTable(output_quarantine)
 print(f"writing to {quarantine_df} completed")
 
 print(f"writing to {output_silver}...")
