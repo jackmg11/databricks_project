@@ -11,7 +11,9 @@ Silver follows the same delta load pattern from the bronze table but also pushes
 
 Gold also uses the delta load pattern from the silver table and the data is curated at a grain level of one record per day and turbine ID and provides requested stats.
 
-the way in which our ETL has been built assumes no changes will be made to old records (once processed a record with the same turbine_id and timestamp will not be reprocessed)
+The way in which our ETL has been built assumes no changes will be made to old records (once processed a record with the same turbine_id and timestamp will not be reprocessed)
+
+Job clusters not specified in yml file due to it being run on serverless (free edition only allows serverless)
 ## Project set up 
 
 you can either deploy this VIA the databricks UI or through local deployment using databrickCLI
